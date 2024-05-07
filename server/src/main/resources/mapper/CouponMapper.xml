@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.CouponMapper">
+    <insert id="addCount">
+        update user_coupon
+        set count=count + 1
+        where user_id = #{userId}
+          and coupon_id = #{couponId}
+    </insert>
+    <update id="updateCount">
+        update user_coupon
+        set count=count - 1
+        where user_id = #{userId}
+          and coupon_id = #{couponId}
+    </update>
+    <delete id="delete">
+        delete
+        from user_coupon
+        where user_id = #{userId}
+          and coupon_id = #{couponId}
+    </delete>
+    <select id="list" resultType="com.sky.vo.CouponVO">
+        SELECT c.*, uc.count
+        FROM Coupon c
+                 JOIN user_coupon uc ON c.id = uc.coupon_id
+        WHERE uc.user_id = #{userId}
+
+    </select>
+    <select id="queryCount" resultType="java.lang.Long">
+        select count
+        from user_coupon
+        where user_id = #{userId}
+          and coupon_id = #{couponId}
+    </select>
+    <select id="queryUserCouponId" resultType="java.lang.Long">
+        select id
+        from user_coupon
+        where user_id = #{userId}
+          and coupon_id = #{couponId}
+    </select>
+</mapper>
