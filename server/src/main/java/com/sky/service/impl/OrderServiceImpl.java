@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.context.BaseContext;
@@ -17,6 +18,7 @@ import com.sky.vo.OrderStatusVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.vo.ShopVO;
+import com.sky.webSocket.WebSocketServer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -43,6 +46,8 @@ public class OrderServiceImpl implements OrderService {
     private ShopMapper shopMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 用户提交订单
@@ -143,6 +148,14 @@ public class OrderServiceImpl implements OrderService {
         orders.setPayStatus(1);
         orders.setId(orderId);
         orderMapper.payUpdate(orders);
+        //根据orderId找到订单
+        Orders order = orderMapper.queryById(orderId);
+        Long shopId=order.getShopId();
+        HashMap map = new HashMap();
+        map.put("orderNumber",order.getNumber());
+        map.put("info","待接单");
+        String message= JSON.toJSONString(map);
+        webSocketServer.sendToShop(message,shopId);
     }
 
     /**
