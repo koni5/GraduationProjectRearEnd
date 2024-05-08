@@ -77,9 +77,13 @@ public class Orders implements Serializable {
     //订单取消时间
     private LocalDateTime cancelTime;
 
+    //取餐码
+    private Long pickupCode;
+
     //店铺id
     private Long shopId;
 
     //优惠券id
     private Long couponId;
+
 }

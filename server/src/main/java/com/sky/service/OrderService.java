@@ -64,4 +64,10 @@ public interface OrderService {
      * @return
      */
     PageResult adminPageQuery(int page, int pageSize, Integer status, Long shopId);
+
+    /**
+     * 商家接单
+     * @param orderId
+     */
+    void receiveOrder(Long orderId);
 }

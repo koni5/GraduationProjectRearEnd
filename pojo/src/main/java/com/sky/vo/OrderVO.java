@@ -13,6 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderVO extends Orders implements Serializable {
+    //取餐码
+    private Long pickupCode;
     //订单菜品信息(用于后台订单详情展示)
     private String orderDishes;
     //用户名

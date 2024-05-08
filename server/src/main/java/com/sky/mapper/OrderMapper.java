@@ -56,4 +56,12 @@ public interface OrderMapper {
      * @return
      */
     Page<Orders> adminPageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 店铺更新订单状态
+     * @param id
+     * @param status
+     * @param pickupCode
+     */
+    void updateOrderStatus(Long id, int status,Long pickupCode);
 }

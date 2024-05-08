@@ -3,13 +3,10 @@ package com.sky.controller.admin;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @CrossOrigin
 @RestController("adminOrderController")
 @RequestMapping("/admin/order")
@@ -27,10 +24,20 @@ public class OrderController {
      * @return
      */
     @GetMapping("/historyOrders")
-    @ApiOperation("历史订单查询")
     public Result<PageResult> page(int page, int pageSize, Integer status, Long shopId) {
         log.info("店铺查询订单");
         PageResult pageResult = orderService.adminPageQuery(page, pageSize, status, shopId);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 接单
+     * @param orderId
+     * @return
+     */
+    @PutMapping("/receive/{orderId}")
+    public Result receiveOrder(@PathVariable("orderId") Long orderId){
+        orderService.receiveOrder(orderId);
+        return Result.success();
     }
 }

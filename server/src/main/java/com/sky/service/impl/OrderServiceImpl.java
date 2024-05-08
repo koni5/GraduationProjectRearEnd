@@ -150,12 +150,12 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.payUpdate(orders);
         //根据orderId找到订单
         Orders order = orderMapper.queryById(orderId);
-        Long shopId=order.getShopId();
+        Long shopId = order.getShopId();
         HashMap map = new HashMap();
-        map.put("orderNumber",order.getNumber());
-        map.put("info","待接单");
-        String message= JSON.toJSONString(map);
-        webSocketServer.sendToShop(message,shopId);
+        map.put("orderNumber", order.getNumber());
+        map.put("info", "待接单");
+        String message = JSON.toJSONString(map);
+        webSocketServer.sendToShop(message, shopId);
     }
 
     /**
@@ -340,5 +340,18 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return new PageResult(page.getTotal(), page.getPages(), list);
+    }
+
+    /**
+     * 商家接单
+     *
+     * @param orderId
+     */
+    @Override
+    public void receiveOrder(Long orderId) {
+        int status = 3;
+        Long pickupCode = orderId;
+        orderMapper.updateOrderStatus(orderId, status, pickupCode);
+        webSocketServer.sendToUser("更新", orderId);
     }
 }

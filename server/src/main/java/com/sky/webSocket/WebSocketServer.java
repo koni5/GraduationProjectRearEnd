@@ -1,6 +1,5 @@
 package com.sky.webSocket;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,7 @@ public class WebSocketServer {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") Long sid) {
-        log.info("{}号客户端建立连接----------------------",sid);
+        log.info("{}号客户端建立连接----------------------", sid);
         sessionMap.put(sid, session);
     }
 
@@ -50,19 +49,36 @@ public class WebSocketServer {
      */
     @OnClose
     public void onClose(@PathParam("sid") Long sid) {
-        log.info("连接断开:{}",sid);
+        log.info("{}客户端断开连接----------------------", sid);
         sessionMap.remove(sid);
     }
 
     /**
-     * 单独发
+     * 单独发给店铺
      *
      * @param message
+     * @param shopId
      */
     public void sendToShop(String message, Long shopId) {
         Session session = sessionMap.get(shopId);
         try {
             //服务器向店铺后台发送消息
+            session.getBasicRemote().sendText(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 单独发送给用户
+     *
+     * @param message
+     * @param orderId
+     */
+    public void sendToUser(String message, Long orderId) {
+        Session session = sessionMap.get(orderId);
+        try {
+            //服务器向用户前台发送信息
             session.getBasicRemote().sendText(message);
         } catch (Exception e) {
             e.printStackTrace();
