@@ -354,4 +354,47 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.updateOrderStatus(orderId, status, pickupCode);
         webSocketServer.sendToUser("更新", orderId);
     }
+
+    /**
+     * 商家完成订单
+     *
+     * @param orderId
+     */
+    @Override
+    public void completeOrder(Long orderId) {
+        int status = 4;
+        orderMapper.updateOrderStatus(orderId, status, null);
+        webSocketServer.sendToUser("更新", orderId);
+    }
+
+    /**
+     * 商家退款
+     *
+     * @param orderId
+     */
+    @Transactional
+    @Override
+    public void rejectOrder(Long orderId, String rejectReason) {
+        //先查询该退款订单是否有使用优惠券
+        Orders orders = orderMapper.queryById(orderId);
+        Long couponId = orders.getCouponId();
+        Long userId = orders.getUserId();
+        if (couponId != null) {
+            //查询user_coupon表,看是否有对应项
+            Long userCouponId = couponMapper.queryUserCouponId(userId, couponId);
+            if (userCouponId != null) {
+                //进行更新操作
+                couponMapper.addCount(userId, couponId);
+            } else {
+                //进行插入操作
+                UserCoupon userCoupon = new UserCoupon();
+                userCoupon.setUserId(userId);
+                userCoupon.setCouponId(couponId);
+                userCoupon.setCount(1L);
+                userCouponMapper.insert(userCoupon);
+            }
+        }
+        //更新订单状态
+        orderMapper.refundOrder(orderId,rejectReason,6,2);
+    }
 }

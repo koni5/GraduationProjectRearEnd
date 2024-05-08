@@ -70,4 +70,17 @@ public interface OrderService {
      * @param orderId
      */
     void receiveOrder(Long orderId);
+
+    /**
+     * 商家完成订单
+     * @param orderId
+     */
+    void completeOrder(Long orderId);
+
+    /**
+     * 商家退款
+     * @param orderId
+     * @param rejectReason
+     */
+    void rejectOrder(Long orderId,String rejectReason);
 }

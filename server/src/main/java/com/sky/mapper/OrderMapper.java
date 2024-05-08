@@ -64,4 +64,13 @@ public interface OrderMapper {
      * @param pickupCode
      */
     void updateOrderStatus(Long id, int status,Long pickupCode);
+
+    /**
+     * 订单退款更新
+     * @param id
+     * @param rejectReason
+     * @param status
+     * @param payStatus
+     */
+    void refundOrder(Long id, String rejectReason, int status, int payStatus);
 }

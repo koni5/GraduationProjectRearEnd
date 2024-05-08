@@ -61,12 +61,15 @@ public class WebSocketServer {
      */
     public void sendToShop(String message, Long shopId) {
         Session session = sessionMap.get(shopId);
-        try {
-            //服务器向店铺后台发送消息
-            session.getBasicRemote().sendText(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (session != null) {
+            try {
+                //服务器向店铺后台发送消息
+                session.getBasicRemote().sendText(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     /**
@@ -77,12 +80,15 @@ public class WebSocketServer {
      */
     public void sendToUser(String message, Long orderId) {
         Session session = sessionMap.get(orderId);
-        try {
-            //服务器向用户前台发送信息
-            session.getBasicRemote().sendText(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (session != null) {
+            try {
+                //服务器向用户前台发送信息
+                session.getBasicRemote().sendText(message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
 }

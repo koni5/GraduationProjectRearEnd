@@ -32,12 +32,37 @@ public class OrderController {
 
     /**
      * 接单
+     *
      * @param orderId
      * @return
      */
     @PutMapping("/receive/{orderId}")
-    public Result receiveOrder(@PathVariable("orderId") Long orderId){
+    public Result receiveOrder(@PathVariable("orderId") Long orderId) {
         orderService.receiveOrder(orderId);
+        return Result.success();
+    }
+
+    /**
+     * 完成订单
+     *
+     * @param orderId
+     * @return
+     */
+    @PutMapping("/completed/{orderId}")
+    public Result completeOrder(@PathVariable("orderId") Long orderId) {
+        orderService.completeOrder(orderId);
+        return Result.success();
+    }
+
+    /**
+     * 商家退款
+     *
+     * @param orderId
+     * @return
+     */
+    @PutMapping("/reject/{orderId}/{rejectReason}")
+    public Result rejectOrder(@PathVariable("orderId") Long orderId, @PathVariable("rejectReason") String rejectReason) {
+        orderService.rejectOrder(orderId,rejectReason);
         return Result.success();
     }
 }

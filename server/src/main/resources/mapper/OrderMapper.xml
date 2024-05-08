@@ -26,6 +26,13 @@
         </set>
         where id=#{id}
     </update>
+    <update id="refundOrder">
+        update orders
+        set status=#{status},
+            pay_status=#{payStatus},
+            rejection_reason=#{rejectReason}
+        where id = #{id}
+    </update>
     <delete id="cancelUpdate">
         update orders
         set status=5,
