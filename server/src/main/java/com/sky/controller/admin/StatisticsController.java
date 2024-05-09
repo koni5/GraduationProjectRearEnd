@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 @CrossOrigin
@@ -49,5 +50,15 @@ public class StatisticsController {
     public Result<OrderReportVO> ordersStatistics(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         log.info("订单数据统计:{},{}", begin, end);
         return Result.success(statisticsService.getOrderStatistics(begin, end));
+    }
+
+    /**
+     * 导出店铺营业数据报表
+     *
+     * @param response
+     */
+    @GetMapping("/exportExcel")
+    public void exportExcel(HttpServletResponse response) {
+        statisticsService.exportExcel(response);
     }
 }

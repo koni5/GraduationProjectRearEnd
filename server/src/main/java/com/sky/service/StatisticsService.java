@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 
 public interface StatisticsService {
@@ -22,4 +23,10 @@ public interface StatisticsService {
      * @return
      */
     OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 导出店铺营业数据报表
+     * @param response
+     */
+    void exportExcel(HttpServletResponse response);
 }
