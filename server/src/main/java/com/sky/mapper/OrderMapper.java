@@ -100,4 +100,11 @@ public interface OrderMapper {
      * @return
      */
     Integer countByMap(HashMap<Object, Object> map);
+
+    /**
+     * 搜索订单
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    Page<Orders> adminNewPageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 }

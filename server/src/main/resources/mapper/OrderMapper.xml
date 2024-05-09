@@ -99,4 +99,25 @@
             </if>
         </where>
     </select>
+    <select id="adminNewPageQuery" resultType="com.sky.entity.Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number!=''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
 </mapper>

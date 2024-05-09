@@ -1,8 +1,10 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +18,15 @@ public class OrderController {
     private OrderService orderService;
 
     /**
-     * 店铺后台订单查询
+     * 订单搜索
      *
-     * @param page
-     * @param pageSize
-     * @param status   订单状态 1待接单 2制作中 3已完成 5已取消 6已退款
+     * @param ordersPageQueryDTO
      * @return
      */
-    @GetMapping("/historyOrders")
-    public Result<PageResult> page(int page, int pageSize, Integer status, Long shopId) {
-        log.info("店铺查询订单");
-        PageResult pageResult = orderService.adminPageQuery(page, pageSize, status, shopId);
+    @GetMapping("/conditionSearch")
+    @ApiOperation("订单搜索")
+    public Result<PageResult> conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageResult pageResult = orderService.conditionSearch(ordersPageQueryDTO);
         return Result.success(pageResult);
     }
 
@@ -62,7 +62,7 @@ public class OrderController {
      */
     @PutMapping("/reject/{orderId}/{rejectReason}")
     public Result rejectOrder(@PathVariable("orderId") Long orderId, @PathVariable("rejectReason") String rejectReason) {
-        orderService.rejectOrder(orderId,rejectReason);
+        orderService.rejectOrder(orderId, rejectReason);
         return Result.success();
     }
 }

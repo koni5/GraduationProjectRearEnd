@@ -19,6 +19,7 @@ import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.vo.ShopVO;
 import com.sky.webSocket.WebSocketServer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -267,24 +269,75 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setShopAddress(shopVO.getAddress());
         return orderVO;
     }
+    /**
+     * 商家接单
+     *
+     * @param orderId
+     */
+    @Override
+    public void receiveOrder(Long orderId) {
+        int status = 3;
+        Long pickupCode = orderId;
+        orderMapper.updateOrderStatus(orderId, status, pickupCode);
+        webSocketServer.sendToUser("更新", orderId);
+    }
 
     /**
-     * 店铺后台订单查询
+     * 商家完成订单
      *
-     * @param pageNum
-     * @param pageSize
-     * @param status
+     * @param orderId
+     */
+    @Override
+    public void completeOrder(Long orderId) {
+        int status = 4;
+        orderMapper.updateOrderStatus(orderId, status, null);
+        webSocketServer.sendToUser("更新", orderId);
+    }
+
+    /**
+     * 商家退款
+     *
+     * @param orderId
+     */
+    @Transactional
+    @Override
+    public void rejectOrder(Long orderId, String rejectReason) {
+        //先查询该退款订单是否有使用优惠券
+        Orders orders = orderMapper.queryById(orderId);
+        Long couponId = orders.getCouponId();
+        Long userId = orders.getUserId();
+        if (couponId != null) {
+            //查询user_coupon表,看是否有对应项
+            Long userCouponId = couponMapper.queryUserCouponId(userId, couponId);
+            if (userCouponId != null) {
+                //进行更新操作
+                couponMapper.addCount(userId, couponId);
+            } else {
+                //进行插入操作
+                UserCoupon userCoupon = new UserCoupon();
+                userCoupon.setUserId(userId);
+                userCoupon.setCouponId(couponId);
+                userCoupon.setCount(1L);
+                userCouponMapper.insert(userCoupon);
+            }
+        }
+        //更新订单状态
+        orderMapper.refundOrder(orderId, rejectReason, 6, 2);
+    }
+
+    /**
+     * 订单搜索
+     *
+     * @param ordersPageQueryDTO
      * @return
      */
     @Override
-    public PageResult adminPageQuery(int pageNum, int pageSize, Integer status, Long shopId) {
-        // 设置分页
-        PageHelper.startPage(pageNum, pageSize);
-        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
-        ordersPageQueryDTO.setStatus(status);
-        ordersPageQueryDTO.setShopId(shopId);
-        // 分页条件查询
-        Page<Orders> page = orderMapper.adminPageQuery(ordersPageQueryDTO);
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+
+        Page<Orders> page = orderMapper.adminNewPageQuery(ordersPageQueryDTO);
+
+        // 部分订单状态，需要额外返回订单菜品信息，将Orders转化为OrderVO
         List<OrderVO> list = new ArrayList();
         // 查询出订单明细，并封装入OrderVO进行响应
         if (page != null && page.getTotal() > 0) {
@@ -342,59 +395,42 @@ public class OrderServiceImpl implements OrderService {
         return new PageResult(page.getTotal(), page.getPages(), list);
     }
 
-    /**
-     * 商家接单
-     *
-     * @param orderId
-     */
-    @Override
-    public void receiveOrder(Long orderId) {
-        int status = 3;
-        Long pickupCode = orderId;
-        orderMapper.updateOrderStatus(orderId, status, pickupCode);
-        webSocketServer.sendToUser("更新", orderId);
-    }
+    private List<OrderVO> getOrderVOList(Page<Orders> page) {
+        // 需要返回订单菜品信息，自定义OrderVO响应结果
+        List<OrderVO> orderVOList = new ArrayList<>();
 
-    /**
-     * 商家完成订单
-     *
-     * @param orderId
-     */
-    @Override
-    public void completeOrder(Long orderId) {
-        int status = 4;
-        orderMapper.updateOrderStatus(orderId, status, null);
-        webSocketServer.sendToUser("更新", orderId);
-    }
-
-    /**
-     * 商家退款
-     *
-     * @param orderId
-     */
-    @Transactional
-    @Override
-    public void rejectOrder(Long orderId, String rejectReason) {
-        //先查询该退款订单是否有使用优惠券
-        Orders orders = orderMapper.queryById(orderId);
-        Long couponId = orders.getCouponId();
-        Long userId = orders.getUserId();
-        if (couponId != null) {
-            //查询user_coupon表,看是否有对应项
-            Long userCouponId = couponMapper.queryUserCouponId(userId, couponId);
-            if (userCouponId != null) {
-                //进行更新操作
-                couponMapper.addCount(userId, couponId);
-            } else {
-                //进行插入操作
-                UserCoupon userCoupon = new UserCoupon();
-                userCoupon.setUserId(userId);
-                userCoupon.setCouponId(couponId);
-                userCoupon.setCount(1L);
-                userCouponMapper.insert(userCoupon);
+        List<Orders> ordersList = page.getResult();
+        if (!CollectionUtils.isEmpty(ordersList)) {
+            for (Orders orders : ordersList) {
+                // 将共同字段复制到OrderVO
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                String orderDishes = getOrderDishesStr(orders);
+                // 将订单菜品信息封装到orderVO中，并添加到orderVOList
+                orderVO.setOrderDishes(orderDishes);
+                orderVOList.add(orderVO);
             }
         }
-        //更新订单状态
-        orderMapper.refundOrder(orderId,rejectReason,6,2);
+        return orderVOList;
+    }
+
+    /**
+     * 根据订单id获取菜品信息字符串
+     *
+     * @param orders
+     * @return
+     */
+    private String getOrderDishesStr(Orders orders) {
+        // 查询订单菜品详情信息（订单中的菜品和数量）
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId(), null);
+
+        // 将每一条订单菜品信息拼接为字符串（格式：宫保鸡丁*3；）
+        List<String> orderDishList = orderDetailList.stream().map(x -> {
+            String orderDish = x.getName() + "*" + x.getNumber() + ";";
+            return orderDish;
+        }).collect(Collectors.toList());
+
+        // 将该订单对应的所有菜品信息拼接在一起
+        return String.join("", orderDishList);
     }
 }

@@ -1,6 +1,7 @@
 package com.sky.service;
 
 import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderStatusVO;
@@ -56,16 +57,6 @@ public interface OrderService {
     OrderVO details(Long id);
 
     /**
-     * 店铺后台订单查询
-     *
-     * @param page
-     * @param pageSize
-     * @param status
-     * @return
-     */
-    PageResult adminPageQuery(int page, int pageSize, Integer status, Long shopId);
-
-    /**
      * 商家接单
      * @param orderId
      */
@@ -83,4 +74,11 @@ public interface OrderService {
      * @param rejectReason
      */
     void rejectOrder(Long orderId,String rejectReason);
+    /**
+     * 订单搜索
+     *
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }
