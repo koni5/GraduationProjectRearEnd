@@ -14,18 +14,21 @@ import java.util.HashMap;
 public interface OrderMapper {
     /**
      * 提交订单
+     *
      * @param orders
      */
     void insert(Orders orders);
 
     /**
      * 取消订单进行字段更新
+     *
      * @param ordersCancelDTO
      */
     void cancelUpdate(OrdersCancelDTO ordersCancelDTO);
 
     /**
      * 根据id查询订单信息
+     *
      * @param id
      * @return
      */
@@ -34,12 +37,14 @@ public interface OrderMapper {
 
     /**
      * 支付成功后更新订单
+     *
      * @param orders
      */
     void payUpdate(Orders orders);
 
     /**
      * 获取单个订单状态
+     *
      * @param id
      * @return
      */
@@ -47,6 +52,7 @@ public interface OrderMapper {
 
     /**
      * 用户查询近期订单
+     *
      * @param userId
      * @return
      */
@@ -54,6 +60,7 @@ public interface OrderMapper {
 
     /**
      * 店铺后台查询订单
+     *
      * @param ordersPageQueryDTO
      * @return
      */
@@ -61,14 +68,16 @@ public interface OrderMapper {
 
     /**
      * 店铺更新订单状态
+     *
      * @param id
      * @param status
      * @param pickupCode
      */
-    void updateOrderStatus(Long id, int status,Long pickupCode);
+    void updateOrderStatus(Long id, int status, Long pickupCode);
 
     /**
      * 订单退款更新
+     *
      * @param id
      * @param rejectReason
      * @param status
@@ -78,8 +87,17 @@ public interface OrderMapper {
 
     /**
      * 动态查询营业额
+     *
      * @param map
      * @return
      */
     Double sumByMap(HashMap<String, Object> map);
+
+    /**
+     * 根据动态条件统计订单数量
+     *
+     * @param map
+     * @return
+     */
+    Integer countByMap(HashMap<Object, Object> map);
 }
