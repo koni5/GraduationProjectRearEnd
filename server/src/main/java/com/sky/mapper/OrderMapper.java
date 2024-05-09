@@ -8,6 +8,8 @@ import com.sky.vo.OrderStatusVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.HashMap;
+
 @Mapper
 public interface OrderMapper {
     /**
@@ -73,4 +75,11 @@ public interface OrderMapper {
      * @param payStatus
      */
     void refundOrder(Long id, String rejectReason, int status, int payStatus);
+
+    /**
+     * 动态查询营业额
+     * @param map
+     * @return
+     */
+    Double sumByMap(HashMap<String, Object> map);
 }

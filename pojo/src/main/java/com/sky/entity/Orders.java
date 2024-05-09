@@ -19,13 +19,14 @@ import java.time.LocalDateTime;
 public class Orders implements Serializable {
 
     /**
-     * 订单状态 1待付款 2待接单 3制作中 4已完成 5已取消
+     * 订单状态 1待付款 2待接单 3制作中 4已完成 5已取消 6已退款
      */
     public static final Integer PENDING_PAYMENT = 1;
     public static final Integer TO_BE_CONFIRMED = 2;
     public static final Integer MAKING = 3;
     public static final Integer DONE = 4;
     public static final Integer CANCELLED = 5;
+    public static final Integer REFUNDED = 6;
 
     /**
      * 支付状态 0未支付 1已支付 2退款
