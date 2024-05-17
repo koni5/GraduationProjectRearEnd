@@ -44,8 +44,8 @@ public class ShoppingCart implements Serializable {
     //图片
     private String image;
 
-    //利润
-    private BigDecimal profit;
+    //成本
+    private BigDecimal cost;
 
     //店铺id
     private Long shopId;

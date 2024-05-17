@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryFlavorsMapper categoryFlavorsMapper;
 
     /**
-     * 查询分类
+     * 查询分类及其口味数据
      *
      * @return
      */

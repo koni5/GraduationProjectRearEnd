@@ -45,7 +45,7 @@ public class ShopCartServiceImpl implements ShopCartService {
             shoppingCart.setName(dish.getName());
             shoppingCart.setImage(dish.getImage());
             shoppingCart.setAmount(dish.getPrice());
-            shoppingCart.setProfit(dish.getProfit());
+            shoppingCart.setCost(dish.getCost());
             shoppingCart.setNumber(1);
             shopCartMapper.insert(shoppingCart);
         }
