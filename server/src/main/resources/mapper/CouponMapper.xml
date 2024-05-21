@@ -21,7 +21,7 @@
     </delete>
     <select id="list" resultType="com.sky.vo.CouponVO">
         SELECT c.*, uc.count
-        FROM Coupon c
+        FROM coupon c
                  JOIN user_coupon uc ON c.id = uc.coupon_id
         WHERE uc.user_id = #{userId}
 

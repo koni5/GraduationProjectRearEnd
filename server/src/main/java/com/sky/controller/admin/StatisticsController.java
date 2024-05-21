@@ -32,7 +32,6 @@ public class StatisticsController {
      * @return
      */
     @GetMapping("/turnoverStatistics")
-    @ApiOperation("营业额统计")
     public Result<TurnoverReportVO> turnoverStatistics(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         log.info("营业额统计:{},{}", begin, end);
         return Result.success(statisticsService.getTurnoverStatistics(begin, end));
@@ -46,7 +45,6 @@ public class StatisticsController {
      * @return
      */
     @GetMapping("/ordersStatistics")
-    @ApiOperation("订单统计")
     public Result<OrderReportVO> ordersStatistics(@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin, @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end) {
         log.info("订单数据统计:{},{}", begin, end);
         return Result.success(statisticsService.getOrderStatistics(begin, end));

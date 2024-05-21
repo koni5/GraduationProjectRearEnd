@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Component
 @Slf4j
-@ServerEndpoint("/ws/{sid}")
+@ServerEndpoint("/ws/{id}")
 public class WebSocketServer {
 
     //存放会话对象
@@ -27,9 +27,9 @@ public class WebSocketServer {
      * 连接建立成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("sid") Long sid) {
-        log.info("{}号客户端建立连接----------------------", sid);
-        sessionMap.put(sid, session);
+    public void onOpen(Session session, @PathParam("id") Long id) {
+        log.info("{}号客户端建立连接----------------------", id);
+        sessionMap.put(id, session);
     }
 
     /**
@@ -38,19 +38,19 @@ public class WebSocketServer {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, @PathParam("sid") Long sid) {
-        System.out.println("收到来自客户端：" + sid + "的信息:" + message);
+    public void onMessage(String message, @PathParam("id") Long id) {
+        System.out.println("收到来自客户端：" + id + "的信息:" + message);
     }
 
     /**
      * 连接关闭调用的方法
      *
-     * @param sid
+     * @param id
      */
     @OnClose
-    public void onClose(@PathParam("sid") Long sid) {
-        log.info("{}客户端断开连接----------------------", sid);
-        sessionMap.remove(sid);
+    public void onClose(@PathParam("id") Long id) {
+        log.info("{}客户端断开连接----------------------", id);
+        sessionMap.remove(id);
     }
 
     /**
