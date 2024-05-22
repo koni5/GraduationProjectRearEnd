@@ -30,7 +30,7 @@ public class Dish implements Serializable {
     //菜品价格
     private BigDecimal price;
 
-    //菜品利润
+    //菜品成本
     private BigDecimal cost;
 
     //图片
