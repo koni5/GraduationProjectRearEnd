@@ -1,5 +1,6 @@
 package com.sky.controller.orderMachine;
 
+import com.sky.context.BaseContext;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.ShoppingCart;
 import com.sky.result.Result;
@@ -38,5 +39,34 @@ public class ShopCartController {
     public Result<List<ShoppingCart>> list(Long shopId) {
         List<ShoppingCart> cartList = shopCartService.list(shopId);
         return Result.success(cartList);
+    }
+    /**
+     * 添加一条菜品
+     * @param shopCartId
+     * @return
+     */
+    @PostMapping("/addOne")
+    public Result addOne(Long shopCartId){
+        shopCartService.addOne(shopCartId);
+        return Result.success();
+    }
+    /**
+     * 减少一条菜品
+     * @param shopCartId
+     * @return
+     */
+    @PostMapping("/deleteOne")
+    public Result deleteOne(Long shopCartId){
+        shopCartService.deleteOne(shopCartId);
+        return Result.success();
+    }
+    /**
+     * 清空购物车
+     */
+    @DeleteMapping("/clearAll")
+    public Result clearAll(Long shopId){
+        Long userId= BaseContext.getCurrentId();
+        shopCartService.clearAll(userId,shopId);
+        return Result.success();
     }
 }

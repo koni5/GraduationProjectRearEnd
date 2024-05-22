@@ -13,8 +13,17 @@
     <delete id="deleteAll">
         delete
         from shopping_cart
-        where user_id = #{userId}
-          and shop_id = #{shopId}
+        <where>
+            <if test="userId==null">
+                user_id is null
+            </if>
+            <if test="userId!=null">
+                and user_id=#{userId}
+            </if>
+            <if test="shopId!=null">
+                and shop_id=#{shopId}
+            </if>
+        </where>
     </delete>
     <select id="list" resultType="com.sky.entity.ShoppingCart">
         select * from shopping_cart
