@@ -22,6 +22,9 @@
             <if test="userId!=null">
                 user_id=#{userId}
             </if>
+            <if test="userId==null">
+                user_id is null
+            </if>
             <if test="dishId!=null">
                 and dish_id=#{dishId}
             </if>
