@@ -31,6 +31,8 @@ public class OrderVO extends Orders implements Serializable {
     private String shopAddress;
     //订单详情
     private List<OrderDetail> orderDetailList;
+    //订单支付方式
+    private String payMethodStr;
 
 
 }

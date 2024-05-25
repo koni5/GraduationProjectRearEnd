@@ -269,6 +269,7 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setShopAddress(shopVO.getAddress());
         return orderVO;
     }
+
     /**
      * 商家接单
      *
@@ -341,19 +342,29 @@ public class OrderServiceImpl implements OrderService {
         List<OrderVO> list = new ArrayList();
         // 查询出订单明细，并封装入OrderVO进行响应
         if (page != null && page.getTotal() > 0) {
-            for (Orders orders : page) {
+            for (Orders order : page) {
                 // 使用 StringBuilder 来构建orderDishes
                 StringBuilder orderDishes = new StringBuilder();
                 OrderVO orderVO = new OrderVO();
+                //根据支付方式int来设置字符串
+                if (order.getPayMethod() == 1) {
+                    orderVO.setPayMethodStr("微信支付");
+                } else {
+                    orderVO.setPayMethodStr("现金支付");
+                }
                 //订单id
-                Long orderId = orders.getId();
+                Long orderId = order.getId();
                 //查询用户名
-                String name = userMapper.getNameById(orders.getUserId());
-                orderVO.setName(name);
+                String name = userMapper.getNameById(order.getUserId());
+                if (name == null) {
+                    orderVO.setName("前台点餐");
+                } else {
+                    orderVO.setName(name);
+                }
                 //计算待支付订单的倒计时值
                 LocalDateTime now = LocalDateTime.now();
                 //获取订单时间
-                LocalDateTime orderTime = orders.getOrderTime();
+                LocalDateTime orderTime = order.getOrderTime();
                 // 订单时间加上5分钟
                 LocalDateTime deadline = orderTime.plusMinutes(5);
                 // 计算当前时间与截止时间的差异
@@ -383,16 +394,56 @@ public class OrderServiceImpl implements OrderService {
                 }
                 orderVO.setOrderDishes(orderDishes.toString());
                 int size = details.size();
-                BeanUtils.copyProperties(orders, orderVO);
+                BeanUtils.copyProperties(order, orderVO);
                 orderVO.setOrderDetailList(orderDetails);
                 orderVO.setDetailCount(size);
                 //查询订单菜的总数
-                Long dishesNumber = orderDetailMapper.count(orders.getId());
+                Long dishesNumber = orderDetailMapper.count(order.getId());
                 orderVO.setDishesNumber(dishesNumber);
                 list.add(orderVO);
             }
         }
         return new PageResult(page.getTotal(), page.getPages(), list);
+    }
+
+    @Override
+    public OrderSubmitVO submitOrder_machine(OrdersSubmitDTO ordersSubmitDTO) {
+        Long userId = BaseContext.getCurrentId();
+        Long shopId = ordersSubmitDTO.getShopId();
+        //查询购物车
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUserId(userId);
+        List<ShoppingCart> shoppingCartList = shopCartMapper.list(cart);
+        //向订单表中插入一条数据
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersSubmitDTO, orders);
+        orders.setOrderTime(LocalDateTime.now());
+        orders.setPayStatus(orders.PAID);
+        orders.setStatus(orders.MAKING);
+        orders.setNumber(String.valueOf(System.currentTimeMillis()));
+        orders.setUserId(userId);
+        orderMapper.insert(orders);
+        //插入取餐码
+        orderMapper.updateCode(orders.getId());
+        //向订单明细表中插入n条数据
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (ShoppingCart shoppingCart : shoppingCartList) {
+            OrderDetail orderDetail = new OrderDetail();
+            BeanUtils.copyProperties(shoppingCart, orderDetail);
+            orderDetail.setOrderId(orders.getId());
+            orderDetails.add(orderDetail);
+        }
+        orderDetailMapper.insertBatch(orderDetails);
+        //清空当前用户购物车数据
+        shopCartMapper.deleteAll(userId, shopId);
+        //封装VO返回结果
+        OrderSubmitVO orderSubmitVO = new OrderSubmitVO();
+        orderSubmitVO.setId(orders.getId());
+        orderSubmitVO.setOrderTime(orders.getOrderTime());
+        orderSubmitVO.setOrderNumber(orders.getNumber());
+        orderSubmitVO.setOrderAmount(orders.getAmount());
+        orderSubmitVO.setPickupCode(orders.getId());
+        return orderSubmitVO;
     }
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {

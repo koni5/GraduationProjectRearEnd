@@ -3,9 +3,10 @@
 <mapper namespace="com.sky.mapper.OrderMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into orders(number, status, user_id, order_time, checkout_time, pay_method, pay_status, amount, remark,
-                           cancel_reason, rejection_reason, cancel_time, shop_id, coupon_id, should_pay)
+                           cancel_reason, rejection_reason, cancel_time, shop_id, coupon_id, should_pay, pickup_code)
         values (#{number}, #{status}, #{userId}, #{orderTime}, #{checkoutTime}, #{payMethod}, #{payStatus}, #{amount},
-                #{remark}, #{cancelReason}, #{rejectionReason}, #{cancelTime}, #{shopId}, #{couponId}, #{shouldPay})
+                #{remark}, #{cancelReason}, #{rejectionReason}, #{cancelTime}, #{shopId}, #{couponId}, #{shouldPay},
+                #{pickupCode})
     </insert>
     <update id="payUpdate">
         update orders
@@ -47,6 +48,11 @@
             </if>
         </set>
         where id=#{id}
+    </update>
+    <update id="updateCode">
+        update orders
+        set pickup_code=#{id}
+        where id = #{id}
     </update>
     <delete id="cancelUpdate">
         update orders

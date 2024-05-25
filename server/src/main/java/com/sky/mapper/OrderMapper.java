@@ -125,4 +125,10 @@ public interface OrderMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    /**
+     * 插入取餐码
+     * @param id
+     */
+    void updateCode(Long id);
 }

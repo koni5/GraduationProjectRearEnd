@@ -81,4 +81,11 @@ public interface OrderService {
      * @return
      */
     PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 点餐机提交订单
+     * @param ordersSubmitDTO
+     * @return
+     */
+    OrderSubmitVO submitOrder_machine(OrdersSubmitDTO ordersSubmitDTO);
 }

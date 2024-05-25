@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +18,9 @@ public class ShopVO implements Serializable {
     private String address;
     //电话
     private String phone;
+    //经度
+    private String longitude;
+    //纬度
+    private String latitude;
+
 }
